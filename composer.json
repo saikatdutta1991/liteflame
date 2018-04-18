@@ -1,0 +1,21 @@
+{
+    "name": "saikatdutta1991/liteflame",
+    "description": "Simple, Liteweight php mvc framework",
+    "keywords": [
+        "framework",
+        "liteflame"
+    ],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=7.0.0",
+        "illuminate/database": "^5.5",
+        "symfony/http-foundation": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "BootLoader\\": "bootloader/"
+        }
+    }
+}
