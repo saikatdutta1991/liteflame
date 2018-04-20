@@ -18,29 +18,33 @@ class kernel
 {
 
     /**
+     * store request object
+     */
+    protected $request;
+
+
+    /**
      * store alias classes
      */
     protected $aliases;
 
+
     /**
-     * holds kernel singleton instance
+     * store route object
      */
-    protected static $kernel;
+    protected $route;
+
+
 
     /**
      * make constructor protected
      */
-    protected function __construct(){}
-
-
-    /**
-     * initializes the dependencies and returns Kernel instance
-     */
-    public static function init()
+    public function __construct(Request $request)
     {
-        return self::$kernel ?: (self::$kernel = new Kernel);
+        $this->request = $request;
+        $this->route = new Route($this->request);
+        $this->aliases = Config::get('app.aliases');
     }
-
 
 
     /**
@@ -48,19 +52,21 @@ class kernel
      */
     protected function loadAliases()
     {
-        $this->aliases = Config::get('app.aliases');
         foreach($this->aliases as $alias => $class) {
             class_alias($class, $alias, true);
         }
+        
+        return $this;
     }
 
 
 
 
     /**
-     *  This is the takes the request object and returns response object
+     *  This is the beating of heart
+     *  Process request and returns response object
      */
-    public function process(Request $request)
+    public function process()
     {   
         
         try {
@@ -68,11 +74,8 @@ class kernel
             /** load app aliases classes */
             $this->loadAliases();
 
-            /** load all route files */
-            Route::loadRoutes();
-
-            /** process request */
-            Route::process();
+            /** load all route files and start process */
+            $this->route->loadRoutes()->process();
 
         } catch(Throwable $e) {
             return (new ThrowableError($e))->getResponse();
