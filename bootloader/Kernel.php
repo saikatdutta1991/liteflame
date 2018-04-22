@@ -60,6 +60,14 @@ class kernel
     }
 
 
+    /**
+     * load core helper functions
+     */
+    protected function loadHelpers()
+    {
+        require dirname(dirname(__FILE__)).'/libraries/helpers.php';
+    }
+
 
 
     /**
@@ -69,26 +77,25 @@ class kernel
     public function process()
     {   
         
+        $reponse = null;
+        
         try {
+            
+            /** load helper functions */
+            $this->loadHelpers();
 
             /** load app aliases classes */
             $this->loadAliases();
 
             /** load all route files and start process */
-            $this->route->loadRoutes()->process();
+            $response = $this->route->loadRoutes()->process();
 
         } catch(Throwable $e) {
-            return (new ThrowableError($e))->getResponse();
+            $response = (new ThrowableError($e))->getResponse();
         }
-        
 
-        die;
-        return $response = new \Symfony\Component\HttpFoundation\Response(
-            '<h1>success</h1>',
-            \Symfony\Component\HttpFoundation\Response::HTTP_OK,
-            array('content-type' => 'text/html')
-        );
-
+        return $response;
+    
     }
 
 

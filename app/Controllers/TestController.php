@@ -2,10 +2,39 @@
 
 namespace App\Controllers;
 
+class X
+{
+    public function x()
+    {
+        return "A@a()";
+    }
+}
+
+
+class A
+{
+    public function __construct(X $x)
+    {
+        $this->x = $x;
+    }
+
+    public function a()
+    {
+        return $this->x->x();
+    }
+}
+
+
 class TestController
 {
-    public function test()
+
+    public function __construct(A $a)
     {
-        echo "TestController@test";
+        $this->a = $a;
+    }
+
+    public function test()
+    {  
+        return $this->a->a();
     }
 }

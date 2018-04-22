@@ -4,6 +4,7 @@ namespace Library;
 
 use Closure;
 use Library\Config;
+use Library\Controller;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -83,12 +84,23 @@ class Route
 
 
     /**
+     * register post routes
+     */
+    public static function post(string $routename, $handler)
+    {
+        $routename = '/'.trim($routename, '/');
+        self::$routes['POST'][$routename] = $handler;
+    }
+
+
+
+    /**
      * find matched route from request and pass control to controller
      */
     public function process()
     {
         /** find route handler */
-         
+    
         $method = $this->request->getMethod();
         $currRoute = $this->getCurrentRouteFromUrl();
 
@@ -96,15 +108,15 @@ class Route
             throw new \Library\Exceptions\RouteNotFound("Route not found");
         }
 
+        /** search and route match get handler */
         $handler = self::$routes[$method][$currRoute];
-
-
-        //echo $this->getCurrentRouteFromUrl();die;
         
-        echo "<pre>";var_dump($handler);die;
+        /** controller instance for resolving and invoking controller */
+        $controller = new Controller($this->request);
+        $response = $controller->resolve($handler);
 
-       /*  call_user_func_array();
-         */
+        return $response;
+        
     }
 
 
